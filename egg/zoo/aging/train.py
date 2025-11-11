@@ -24,7 +24,7 @@ def get_params(params: List[str]) -> argparse.Namespace:
     parser.add_argument(
         "--perceptual_dimensions",
         type=str,
-        default="[4, 4, 4, 4, 5]",
+        default="[10, 10, 10, 10]",
         help="Number of features for every perceptual dimension",
     )
 
@@ -37,8 +37,8 @@ def get_params(params: List[str]) -> argparse.Namespace:
     parser.add_argument(
         "--train_samples",
         type=float,
-        default=1e5,
-        help="Number of tuples in training data (default: 1e5)",
+        default=8e3,
+        help="Number of tuples in training data (default: 8e3)",
     )
     parser.add_argument(
         "--validation_samples",
@@ -68,59 +68,59 @@ def get_params(params: List[str]) -> argparse.Namespace:
     parser.add_argument(
         "--feature_hidden",
         type=int,
-        default=50,
-        help="Size of the feature encoder output (default: 50)",
+        default=256,
+        help="Size of the feature encoder output (default: 256)",
     )
     parser.add_argument(
         "--sender_hidden",
         type=int,
-        default=50,
-        help="Size of the hidden layer of Sender (default: 50)",
+        default=256,
+        help="Size of the hidden layer of Sender (default: 256)",
     )
     parser.add_argument(
         "--receiver_hidden",
         type=int,
-        default=50,
-        help="Size of the hidden layer of Receiver (default: 50)",
+        default=256,
+        help="Size of the hidden layer of Receiver (default: 256)",
     )
 
     parser.add_argument(
         "--sender_embedding",
         type=int,
-        default=10,
-        help="Dimensionality of the embedding hidden layer for Sender (default: 10)",
+        default=256,
+        help="Dimensionality of the embedding hidden layer for Sender (default: 256)",
     )
     parser.add_argument(
         "--receiver_embedding",
         type=int,
-        default=10,
-        help="Dimensionality of the embedding hidden layer for Receiver (default: 10)",
+        default=256,
+        help="Dimensionality of the embedding hidden layer for Receiver (default: 256)",
     )
 
     parser.add_argument(
         "--sender_cell",
         type=str,
-        default="rnn",
-        help="Type of the cell used for Sender {rnn, gru, lstm} (default: rnn)",
+        default="lstm",
+        help="Type of the cell used for Sender {rnn, gru, lstm} (default: lstm)",
     )
     parser.add_argument(
         "--receiver_cell",
         type=str,
-        default="rnn",
-        help="Type of the cell used for Receiver {rnn, gru, lstm} (default: rnn)",
+        default="lstm",
+        help="Type of the cell used for Receiver {rnn, gru, lstm} (default: lstm)",
     )
 
     parser.add_argument(
         "--sender_lr",
         type=float,
-        default=1e-1,
-        help="Learning rate for Sender's parameters (default: 1e-1)",
+        default=1e-3,
+        help="Learning rate for Sender's parameters (default: 1e-3)",
     )
     parser.add_argument(
         "--receiver_lr",
         type=float,
-        default=1e-1,
-        help="Learning rate for Receiver's parameters (default: 1e-1)",
+        default=1e-3,
+        help="Learning rate for Receiver's parameters (default: 1e-3)",
     )
     parser.add_argument(
         "--temperature",
@@ -130,6 +130,15 @@ def get_params(params: List[str]) -> argparse.Namespace:
     )
 
     args = core.init(parser, params)
+
+    if args.vocab_size == 10 and '--vocab_size' not in params:
+        args.vocab_size = 20
+    if args.max_len == 1 and '--max_len' not in params:
+        args.max_len = 10
+    if args.batch_size == 32 and '--batch_size' not in params:
+        args.batch_size = 1024
+    if args.n_epochs == 10 and '--n_epochs' not in params:
+        args.n_epochs = 150
 
     check_args(args)
     print(args)

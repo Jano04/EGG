@@ -118,11 +118,12 @@ class VectorsLoader:
 
     def collate(self, batch):
         tuples, target_idxs = [elem[0] for elem in batch], [elem[1] for elem in batch]
+        actual_batch_size = len(batch)
         receiver_input = np.reshape(
-            tuples, (self.batch_size, self.n_distractors + 1, -1)
+            tuples, (actual_batch_size, self.n_distractors + 1, -1)
         )
         labels = np.array(target_idxs)
-        targets = receiver_input[np.arange(self.batch_size), labels]
+        targets = receiver_input[np.arange(actual_batch_size), labels]
         return (
             torch.from_numpy(targets).float(),
             torch.from_numpy(labels).long(),
@@ -152,9 +153,7 @@ class VectorsLoader:
 
         assert (
             self.train_samples >= self.batch_size
-            and self.validation_samples >= self.batch_size
-            and self.test_samples >= self.batch_size
-        ), "Batch size cannot be smaller than any split size"
+        ), f"Training samples ({self.train_samples}) must be >= batch_size ({self.batch_size})"
 
         train_dataset = TupleDataset(*train)
         valid_dataset = TupleDataset(*valid)
@@ -171,13 +170,13 @@ class VectorsLoader:
             valid_dataset,
             batch_size=self.batch_size,
             collate_fn=self.collate,
-            drop_last=True,
+            drop_last=False,
         )
         test_it = data.DataLoader(
             test_dataset,
             batch_size=self.batch_size,
             collate_fn=self.collate,
-            drop_last=True,
+            drop_last=False,
         )
 
         if self.dump_data_folder:

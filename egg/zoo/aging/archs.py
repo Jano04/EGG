@@ -226,13 +226,19 @@ class AlternatingGame(nn.Module):
     ) -> Tuple[torch.Tensor, Interaction]:
         """
         Forward pass that alternates between A→B and B→A based on batch counter.
+        During training, alternates by batch. During validation/test, processes
+        both directions to get complete metrics.
 
         Returns:
-            loss: Scalar loss for the current direction
+            loss: Scalar loss (average of both directions if in eval mode)
             interaction: Interaction object with 'direction' field in aux
-                        (0.0 for A→B, 1.0 for B→A)
+                        (0.0 for A→B, 1.0 for B→A, or batch with both during eval)
         """
-        # Determine direction based on batch counter (even=A→B, odd=B→A)
+        # In eval mode (validation/test), process BOTH directions to get complete metrics
+        if not self.training:
+            return self._forward_both_directions(sender_input, labels, receiver_input, aux_input)
+
+        # In training mode, alternate as usual
         direction = self.batch_counter % 2
 
         if direction == 0:
@@ -252,6 +258,65 @@ class AlternatingGame(nn.Module):
         self.batch_counter += 1
 
         return loss, interaction
+
+    def _forward_both_directions(
+        self,
+        sender_input: torch.Tensor,
+        labels: torch.Tensor,
+        receiver_input: Optional[torch.Tensor] = None,
+        aux_input: Optional[Dict] = None
+    ) -> Tuple[torch.Tensor, Interaction]:
+        """
+        Process the same batch in both directions (for validation/test).
+        Returns combined loss and interaction with both directions tagged.
+        """
+        batch_size = sender_input.size(0)
+
+        # Process A→B direction
+        loss_AB, interaction_AB = self.game_A_to_B(sender_input, labels, receiver_input, aux_input)
+
+        # Process B→A direction
+        loss_BA, interaction_BA = self.game_B_to_A(sender_input, labels, receiver_input, aux_input)
+
+        # Average the losses
+        combined_loss = (loss_AB.mean() + loss_BA.mean()) / 2
+
+        # Combine interactions by concatenating both directions
+        # Start with interaction_AB and modify its fields
+        combined_interaction = interaction_AB
+
+        # Create direction tags: first half is A→B (0), second half is B→A (1)
+        combined_interaction.aux['direction'] = torch.cat([
+            torch.zeros(batch_size, dtype=torch.float, device=sender_input.device),
+            torch.ones(batch_size, dtype=torch.float, device=sender_input.device)
+        ])
+
+        # Concatenate all other aux fields
+        for key in interaction_AB.aux.keys():
+            if key != 'direction':
+                combined_interaction.aux[key] = torch.cat([
+                    interaction_AB.aux[key],
+                    interaction_BA.aux[key]
+                ])
+
+        # Concatenate main fields
+        combined_interaction.sender_input = torch.cat([interaction_AB.sender_input, interaction_BA.sender_input])
+
+        if interaction_AB.receiver_input is not None:
+            combined_interaction.receiver_input = torch.cat([interaction_AB.receiver_input, interaction_BA.receiver_input])
+
+        if interaction_AB.labels is not None:
+            combined_interaction.labels = torch.cat([interaction_AB.labels, interaction_BA.labels])
+
+        combined_interaction.message = torch.cat([interaction_AB.message, interaction_BA.message])
+
+        if interaction_AB.receiver_output is not None:
+            combined_interaction.receiver_output = torch.cat([interaction_AB.receiver_output, interaction_BA.receiver_output])
+
+        if interaction_AB.message_length is not None:
+            combined_interaction.message_length = torch.cat([interaction_AB.message_length, interaction_BA.message_length])
+
+        return combined_loss, combined_interaction
 
     def reset_batch_counter(self) -> None:
         """Reset the batch counter (called at the start of each epoch)."""
