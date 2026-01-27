@@ -1,0 +1,15 @@
+{
+    "n_agents": 10,
+    "total_agents": 50,
+    "warmup_threshold": 0.0,
+    "fresh_start": true,
+    "kill_epoch": 10,
+    "random_seed": 0,
+    "lr": 0.003,
+    "load_from_checkpoint": "experiments/exp5/warmup/warmup.tar",
+    "checkpoint_dir": "experiments/exp5/baseline",
+    "n_epochs": 400,
+    "compute_cross_gen_online": true,
+    "deterministic": true,
+    "tensorboard": true
+}

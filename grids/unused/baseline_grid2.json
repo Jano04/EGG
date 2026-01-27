@@ -1,0 +1,8 @@
+{
+    "n_agents": [2, 4, 8, 10, 12, 14, 16],
+    "random_seed": [0, 1, 2],
+    "n_epochs": 500,
+    "checkpoint_freq": 100,
+    "snapshot_freq": 10,
+    "deterministic": true
+}

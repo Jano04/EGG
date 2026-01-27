@@ -1,0 +1,19 @@
+{
+    "n_agents": 10,
+    "total_agents": 50,
+    "warmup_threshold": 0.0,
+    "fresh_start": true,
+    "kill_epoch": 10,
+    "random_seed": [0, 1, 2],
+    "enable_plasticity": true,
+    "lr_min": 0.001,
+    "lr_max": 0.001,
+    "temp_min": 0.5,
+    "temp_max": 0.5,
+    "plasticity_max_age": 100,
+    "load_from_checkpoint": "experiments/exp3_plasticity/warmup/final.tar",
+    "n_epochs": 400,
+    "compute_cross_gen_online": true,
+    "deterministic": true,
+    "snapshot_freq": 10
+}

@@ -1,0 +1,11 @@
+{
+    "n_agents": 10,
+    "total_agents": 50,
+    "warmup_threshold": 0.95,
+    "stop_after_warmup": true,
+    "deterministic": true,
+    "tensorboard": true,
+    "checkpoint_freq": 100,
+    "random_seed": 0,
+    "checkpoint_dir": "experiments/exp2_turnover/rate/warmup"
+}

@@ -1,0 +1,11 @@
+{
+    "n_agents": 8,
+    "total_agents": 40,
+    "kill_epoch": 10,
+    "random_seed": [0, 1, 2],
+    "warmup_threshold": 0.95,
+    "n_epochs": 2000,
+    "compute_cross_gen_online": true,
+    "deterministic": true,
+    "tensorboard": true
+}

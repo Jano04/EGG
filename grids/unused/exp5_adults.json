@@ -1,0 +1,20 @@
+{
+    "n_agents": 10,
+    "total_agents": 50,
+    "warmup_threshold": 0.0,
+    "fresh_start": true,
+    "kill_epoch": 10,
+    "random_seed": 0,
+    "enable_plasticity": true,
+    "lr_min": 0.001,
+    "lr_max": 0.001,
+    "temp_min": 0.4,
+    "temp_max": 0.4,
+    "plasticity_max_age": 100,
+    "load_from_checkpoint": "experiments/exp5/warmup/warmup.tar",
+    "checkpoint_dir": "experiments/exp5/adults",
+    "n_epochs": 400,
+    "compute_cross_gen_online": true,
+    "deterministic": true,
+    "tensorboard": true
+}

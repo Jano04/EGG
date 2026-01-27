@@ -1,0 +1,13 @@
+{
+    "n_agents": 10,
+    "total_agents": 50,
+    "kill_epoch": [2, 5, 10],
+    "random_seed": [0, 1, 2],
+    "fresh_start": true,
+    "warmup_threshold": 0.0,
+    "compute_cross_gen_online": true,
+    "deterministic": true,
+    "tensorboard": true,
+    "n_epochs": 1000,
+    "load_from_checkpoint": "experiments/turnover/warmup/final.tar"
+}
